@@ -527,6 +527,90 @@ The use of `ngrok` is not needed.
 
 :::
 
+::: tab Apple
+
+#### Using ngrok
+
+Apple Sign In doesn't accept `localhost` urls. <br>
+Use `ngrok` to serve the backend app.
+
+```
+ngrok http 1337
+```
+
+Don't forget to update the server url in the backend config file `config/server.js` and the server url in your frontend app (environment variable `REACT_APP_BACKEND_URL` if you use [react login example app](https://github.com/strapi/strapi-examples/tree/master/login-react)) with the generated ngrok url.
+
+#### Apple configuration
+
+Apple configuration take some time, so please be patient and read every step with thoroughness.
+
+##### Configure Services IDs Identifiers
+
+- Go to (https://developer.apple.com/account/resources/certificates/list)[Apple Developer Platform]
+- Click on (https://developer.apple.com/account/resources/identifiers/list)[Identifiers]
+- Click on `+` in order to add a new `Services IDs`
+- Fill the information:
+  - **Description**: The name of your business or application
+  - **Identifier**: Choose a reverse-domain style string for your application or business
+- Click on `Continue`
+
+You can now `Configure` Sign In with Apple :
+
+- Click on `Configure`
+- Select a Primary App ID, if you don't have app listed, see section below "Configure App ID"
+- Fill the information:
+  - **Domains and Subdomains**: List of ALL of your domains and subdomains will use Apple Sign In auth (API, website, ...) separe by a comma without `https://`
+  - **Return URLs**: All of API callback URL, with `HTTPS` only `https://www.example.com/connect/apple/callback` (and `ngrok` generated url of course)
+  - Click on `Next` and `Save` the configuration
+
+##### Configure App ID (optional)
+
+- Create or edit an App IDs
+- In `Capabilities` section, enable `Sign in with Apple`
+- Click on `edit` and choose `Enable as a primary App ID`
+
+You could also provide a `Server to Server Notification Endpoint`, but we don't provide documentation for now.
+
+##### Configure Keys
+
+- Go to (https://developer.apple.com/account/resources/authkeys/list)[Apple Developer Keys section]
+- Click on `+`
+- Fill the information:
+  - **Key Name**: A name for your key
+  - Select **Sign In with Apple**
+  - Click on `configure`
+  - Select your Primary App ID
+  - Save
+- An apple private keys `p8` file is generated, you can download it once, so be carefulness and save it preciously
+
+##### Configure email communication
+
+- Go to (https://developer.apple.com/account/resources/services/list)[Apple Developer More section]
+- Click on `Configure`
+- Click on `Settings` and enable the service
+- In `Email Sources` click on `+`
+- Fill the information:
+  - Add all `domains` and `subdomains` than sending email
+  - Add `email addresses` if needed (sender email, like `no-reply`, `contact`, ...) but you can leave blank the field
+
+You need to have SPF status to green, so configure your domains SPF.
+
+#### Strapi configuration
+
+- Visit the User Permissions provider settings page <br> [http://localhost:1337/admin/plugins/users-permissions/providers](http://localhost:1337/admin/plugins/users-permissions/providers)
+- Click on the **Apple** provider
+- Fill the information (replace with your own client ID and secret):
+  - **Enable**: `ON`
+  - **Client ID**: com.example.service `or` com.example.app
+  - **Client Secret**: Generated token with `.p8` private key file
+  - **The redirect URL to your front-end app**: `http://localhost:3000/connect/apple/redirect`
+
+If you use Apple Sign-In from web application, use service appIds
+If you use Apple Sign-In from App (Android or iOS), use identifiers appIds.
+If you need both : /_ todo process _/
+
+:::
+
 ::::
 
 Your configuration is done.

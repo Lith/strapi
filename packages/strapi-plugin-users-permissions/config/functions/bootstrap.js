@@ -24,6 +24,20 @@ module.exports = async () => {
       enabled: true,
       icon: 'envelope',
     },
+    apple: {
+      enabled: false,
+      icon: 'apple',
+      key: '',
+      secret: '',
+      callback: `${strapi.config.server.url}/auth/apple/callback`,
+      scope: ['name', 'email'],
+      nonce: true,
+      state: true,
+      custom_params: {
+        response_type: 'code id_token',
+        response_mode: 'form_post',
+      },
+    },
     discord: {
       enabled: false,
       icon: 'discord',

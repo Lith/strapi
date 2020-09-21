@@ -203,6 +203,20 @@
     },
     {
       "method": "POST",
+      "path": "/connect/*",
+      "handler": "Auth.connect",
+      "config": {
+        "policies": ["plugins::users-permissions.ratelimit"],
+        "prefix": "",
+        "description": "Connect a provider",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User"
+        }
+      }
+    },
+    {
+      "method": "POST",
       "path": "/auth/local",
       "handler": "Auth.callback",
       "config": {

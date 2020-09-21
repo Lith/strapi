@@ -12,6 +12,8 @@ const request = require('request');
 const purest = require('purest')({ request });
 const purestConfig = require('@purest/providers');
 const { getAbsoluteServerUrl } = require('strapi-utils');
+// Require for apple provider
+const jwt = require('jsonwebtoken');
 
 /**
  * Connect thanks to a third-party provider.
@@ -123,6 +125,43 @@ const getProfile = async (provider, query, callback) => {
     .get();
 
   switch (provider) {
+    case 'apple': {
+      const apple = purest({
+        provider: 'apple',
+        config: {
+          apple: {
+            'https://appleid.apple.com': {
+              __domain: {
+                auth: {
+                  auth: { bearer: '[0]' },
+                },
+              },
+              '{endpoint}': {
+                __path: {
+                  alias: '__default',
+                },
+              },
+            },
+          },
+        },
+      });
+      apple
+        .query()
+        .post('auth/token')
+        .auth(access_token)
+        .request((err, res, body) => {
+          if (err) {
+            callback(err);
+          } else {
+            const idToken = jwt.decode(body.id_token);
+            callback(null, {
+              username: idToken.email.split('@')[0],
+              email: idToken.email,
+            });
+          }
+        });
+      break;
+    }
     case 'discord': {
       const discord = purest({
         provider: 'discord',
